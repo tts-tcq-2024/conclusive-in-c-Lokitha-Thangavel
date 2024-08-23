@@ -21,20 +21,20 @@ BreachType inferBreach(double value, double lowerLimit, double upperLimit) {
 
 // Function to set temperature limits based on cooling type
 void getCoolingLimits(CoolingType coolingType, int* lowerLimit, int* upperLimit) {
-  switch (coolingType) {
-    case PASSIVE_COOLING:
-      *lowerLimit = LOWER_LIMIT_PASSIVE_COOLING;
-      *upperLimit = UPPER_LIMIT_PASSIVE_COOLING;
-      break;
-    case MED_ACTIVE_COOLING:
-      *lowerLimit = LOWER_LIMIT_MED_ACTIVE_COOLING;
-      *upperLimit = UPPER_LIMIT_MED_ACTIVE_COOLING;
-      break;
-    case HI_ACTIVE_COOLING:
-      *lowerLimit = LOWER_LIMIT_HI_ACTIVE_COOLING;
-      *upperLimit = UPPER_LIMIT_HI_ACTIVE_COOLING;
-      break;
-  }
+  // Array to hold the lower and upper limits for each cooling type
+  int limits[3][2] = {
+    {LOWER_LIMIT_PASSIVE_COOLING, UPPER_LIMIT_PASSIVE_COOLING}, // PASSIVE_COOLING
+    {LOWER_LIMIT_MED_ACTIVE_COOLING, UPPER_LIMIT_MED_ACTIVE_COOLING}, // MED_ACTIVE_COOLING
+    {LOWER_LIMIT_HI_ACTIVE_COOLING, UPPER_LIMIT_HI_ACTIVE_COOLING} // HI_ACTIVE_COOLING
+  };
+
+  // Map the CoolingType to the correct array index
+  int index = (coolingType == PASSIVE_COOLING) ? 0 :
+              (coolingType == MED_ACTIVE_COOLING) ? 1 : 2;
+
+  // Set the lower and upper limits based on the index
+  *lowerLimit = limits[index][0];
+  *upperLimit = limits[index][1];
 }
 
 // Function to classify temperature breaches based on the battery cooling type
@@ -66,18 +66,15 @@ void sendToController(BreachType breachType) {
 // Function to send email alerts based on the breach type
 void sendToEmail(BreachType breachType) {
   const char* recipient = "a.b@c.com";
-  switch (breachType) {
-    case TOO_LOW:
-      printf("To: %s\n", recipient);
-      printf("Hi, the temperature is too low\n");
-      break;
-    case TOO_HIGH:
-      printf("To: %s\n", recipient);
-      printf("Hi, the temperature is too high\n");
-      break;
-    case NORMAL:
-    default:
-      // No action for normal state
-      break;
+
+  // Handle breach types with conditional statements
+  if (breachType == TOO_LOW) {
+    printf("To: %s\n", recipient);
+    printf("Hi, the temperature is too low\n");
+  } else if (breachType == TOO_HIGH) {
+    printf("To: %s\n", recipient);
+    printf("Hi, the temperature is too high\n");
   }
+  // For NORMAL or any other unforeseen breach type, no action is taken by default
 }
+
